@@ -1,9 +1,10 @@
 <script lang="ts">
   import { ChevronDown } from 'lucide-svelte';
   import { onMount } from 'svelte';
+  import flatpickr from 'flatpickr';
+  import 'flatpickr/dist/flatpickr.min.css';
 
-  let checkinInput: HTMLInputElement;
-  let checkoutInput: HTMLInputElement;
+  let dateInput: HTMLInputElement;
 
   const langs = ['EN', 'ZH', 'FR', 'KH', 'TL', 'MY'];
   let currentLang = $state('EN');
@@ -67,40 +68,63 @@
     return () => window.removeEventListener('scroll', handleScroll);
   });
 
-  function scrollToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  function smoothScrollTo(target: number, duration = 1800) {
+    const start = window.scrollY;
+    const distance = target - start;
+    let startTime: number | null = null;
+
+    function easeInOutQuart(t: number) {
+      return t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
+    }
+
+    function step(timestamp: number) {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      window.scrollTo(0, start + distance * easeInOutQuart(progress));
+      if (progress < 1) requestAnimationFrame(step);
+    }
+
+    requestAnimationFrame(step);
   }
 
-  onMount(async () => {
-    const { default: Pikaday } = await import('pikaday');
-    await import('pikaday/css/pikaday.css');
-    const checkin = new Pikaday({
-      field: checkinInput,
-      format: 'DD MMM YYYY',
-      minDate: new Date(),
-      onSelect(date) {
-        formData.checkin = date.toISOString().split('T')[0];
-        checkout.setMinDate(new Date(date.getTime() + 86400000));
-      }
-    });
+  function scrollToTop() {
+    smoothScrollTo(0);
+  }
 
-    const checkout = new Pikaday({
-      field: checkoutInput,
-      format: 'DD MMM YYYY',
-      minDate: new Date(),
-      onSelect(date) {
-        formData.checkout = date.toISOString().split('T')[0];
-      }
-    });
-
-    return () => {
-      checkin.destroy();
-      checkout.destroy();
-    };
+  $effect(() => {
+    function handleAnchorClick(e: MouseEvent) {
+      const anchor = (e.target as HTMLElement).closest('a[href^="#"]') as HTMLAnchorElement | null;
+      if (!anchor) return;
+      const id = anchor.getAttribute('href')?.slice(1);
+      if (!id) return;
+      const el = document.getElementById(id);
+      if (!el) return;
+      e.preventDefault();
+      const top = el.getBoundingClientRect().top + window.scrollY - 64;
+      smoothScrollTo(top);
+    }
+    document.addEventListener('click', handleAnchorClick);
+    return () => document.removeEventListener('click', handleAnchorClick);
   });
 
   // Enquiry form
   let formData = $state({ name: '', email: '', checkin: '', checkout: '', suite: '', message: '' });
+
+  onMount(() => {
+    flatpickr(dateInput, {
+      mode: 'range',
+      minDate: 'today',
+      dateFormat: 'd M Y',
+      showMonths: 2,
+      disableMobile: false,
+      onChange(selectedDates) {
+        if (selectedDates[0]) formData.checkin = selectedDates[0].toISOString().split('T')[0];
+        if (selectedDates[1]) formData.checkout = selectedDates[1].toISOString().split('T')[0];
+      }
+    });
+  });
+
   let formStatus = $state<'idle' | 'sending' | 'sent' | 'error'>('idle');
 
   async function handleSubmit(e: Event) {
@@ -249,7 +273,7 @@
     <a href="#rooftop" class="hover:text-white transition">Rooftop</a>
     <a href="#restaurant" class="hover:text-white transition">Restaurant</a>
     <a href="#amenities" class="hover:text-white transition">Amenities</a>
-    <a href="#contact" class="hover:text-white transition">Contact</a>
+    <a href="#enquiry" class="hover:text-white transition">Contact</a>
   </div>
   <div class="flex items-center gap-4">
     <button
@@ -294,10 +318,10 @@
   />
   <div class="absolute inset-0 bg-linear-to-br from-stone-900/80 via-stone-800/60 to-amber-900/50"></div>
   <div class="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
-    <p class="text-white/70 text-xs tracking-[0.4em] uppercase mb-4 font-light">Phnom Penh · Cambodia</p>
+    <p class="text-amber-400/80 text-xs tracking-[0.4em] uppercase mb-4 font-light">Phnom Penh · Cambodia</p>
     <h1 class="text-5xl md:text-7xl mb-6" style="font-family: 'Playfair Display', serif;">
       <span class="text-amber-400">La Belle</span><br/>
-      <em class="text-amber-300">Résidence</em>
+      <em class="text-amber-400">Résidence</em>
     </h1>
     <p class="text-white/80 text-lg md:text-xl font-light max-w-xl mx-auto mb-2">
       Serviced apartments with a French touch<br/>and Khmer hospitality
@@ -637,10 +661,10 @@
 </section>
 
 <!-- TESTIMONIALS -->
-<section class="py-24 px-8 bg-stone-100">
+<section class="pt-12 pb-24 px-8 bg-stone-100">
   <div class="max-w-6xl mx-auto">
-    <div class="text-center mb-16">
-      <p class="text-amber-600 text-xs tracking-[0.4em] uppercase mb-4">Guest Reviews</p>
+    <div class="text-center mb-12">
+      <p class="text-amber-600 text-xs tracking-[0.4em] uppercase mb-3">Guest Reviews</p>
       <h2 class="text-4xl text-stone-800" style="font-family: 'Playfair Display', serif;">What Guests Say</h2>
     </div>
     <div class="grid md:grid-cols-3 gap-8">
@@ -663,66 +687,63 @@
 </section>
 
 <!-- EMAIL FORM -->
-<section id="enquiry" class="py-24 px-8 bg-white">
+<section id="enquiry" class="pt-12 pb-24 px-8 bg-white">
   <div class="max-w-2xl mx-auto">
-    <div class="text-center mb-12">
-      <p class="text-amber-600 text-xs tracking-[0.4em] uppercase mb-4">Direct Enquiry</p>
+    <div class="text-center mb-8">
+      <p class="text-amber-600 text-xs tracking-[0.4em] uppercase mb-3">Direct Enquiry</p>
       <h2 class="text-4xl text-stone-800" style="font-family: 'Playfair Display', serif;">Send Us a Message</h2>
-      <p class="text-stone-500 font-light mt-4">We respond within 24 hours</p>
+      <p class="text-stone-500 font-light mt-3">We respond within 24 hours</p>
     </div>
 
     <form onsubmit={handleSubmit} class="space-y-6">
       <div class="grid md:grid-cols-2 gap-6">
         <div>
-          <label class="block text-stone-600 text-xs tracking-widest uppercase mb-2">Full Name</label>
+          <label class="block text-stone-600 text-sm tracking-widest uppercase mb-2">Full Name</label>
           <input
             type="text"
             bind:value={formData.name}
             required
-            class="w-full border border-stone-200 rounded-xl px-4 py-3 text-stone-800 text-sm font-light focus:outline-none focus:border-amber-400 transition"
+            class="w-full border border-stone-200 rounded-xl px-4 py-3 text-stone-800 text-base font-light focus:outline-none focus:border-amber-400 transition"
             placeholder="Your name"
           />
         </div>
         <div>
-          <label class="block text-stone-600 text-xs tracking-widest uppercase mb-2">Email</label>
+          <label class="block text-stone-600 text-sm tracking-widest uppercase mb-2">Email</label>
           <input
             type="email"
             bind:value={formData.email}
             required
-            class="w-full border border-stone-200 rounded-xl px-4 py-3 text-stone-800 text-sm font-light focus:outline-none focus:border-amber-400 transition"
+            class="w-full border border-stone-200 rounded-xl px-4 py-3 text-stone-800 text-base font-light focus:outline-none focus:border-amber-400 transition"
             placeholder="your@email.com"
           />
         </div>
       </div>
 
-      <div class="grid md:grid-cols-2 gap-6">
-        <div>
-          <label class="block text-stone-600 text-xs tracking-widest uppercase mb-2">Check In</label>
+      <div>
+        <label class="block text-stone-600 text-sm tracking-widest uppercase mb-2">
+          Check In — Check Out
+        </label>
+        <div class="relative">
           <input
-            bind:this={checkinInput}
+            bind:this={dateInput}
             type="text"
             readonly
-            placeholder="Select date"
-            class="w-full border border-stone-200 rounded-xl px-4 py-3 text-stone-800 text-sm font-light focus:outline-none focus:border-amber-400 transition cursor-pointer bg-white"
+            placeholder="Select your dates"
+            class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-4 text-stone-800 text-sm font-light focus:outline-none focus:border-amber-400 transition cursor-pointer"
           />
-        </div>
-        <div>
-          <label class="block text-stone-600 text-xs tracking-widest uppercase mb-2">Check Out</label>
-          <input
-            bind:this={checkoutInput}
-            type="text"
-            readonly
-            placeholder="Select date"
-            class="w-full border border-stone-200 rounded-xl px-4 py-3 text-stone-800 text-sm font-light focus:outline-none focus:border-amber-400 transition cursor-pointer bg-white"
-          />
+          <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
         </div>
       </div>
 
       <div>
-        <label class="block text-stone-600 text-xs tracking-widest uppercase mb-2">Suite Type</label>
+        <label class="block text-stone-600 text-sm tracking-widest uppercase mb-2">Suite Type</label>
         <select
           bind:value={formData.suite}
-          class="w-full border border-stone-200 rounded-xl px-4 py-3 text-stone-800 text-sm font-light focus:outline-none focus:border-amber-400 transition"
+          class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-4 text-stone-800 text-base font-light focus:outline-none focus:border-amber-400 focus:bg-white transition appearance-none cursor-pointer"
         >
           <option value="">Select a suite</option>
           <option value="1 Bedroom Suite">1 Bedroom Suite</option>
@@ -734,11 +755,11 @@
       </div>
 
       <div>
-        <label class="block text-stone-600 text-xs tracking-widest uppercase mb-2">Message</label>
+        <label class="block text-stone-600 text-sm tracking-widest uppercase mb-2">Message</label>
         <textarea
           bind:value={formData.message}
           rows="4"
-          class="w-full border border-stone-200 rounded-xl px-4 py-3 text-stone-800 text-sm font-light focus:outline-none focus:border-amber-400 transition resize-none"
+          class="w-full border border-stone-200 rounded-xl px-4 py-3 text-stone-800 text-base font-light focus:outline-none focus:border-amber-400 transition resize-none"
           placeholder="Any questions or special requests..."
         ></textarea>
       </div>

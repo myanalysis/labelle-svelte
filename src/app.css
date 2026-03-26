@@ -1,34 +1,102 @@
 @import "tailwindcss";
 
-.pika-single {
-  font-family: 'Inter', sans-serif;
-  border: 1px solid #e7e5e4;
-  border-radius: 1rem;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+::placeholder {
+  color: #78716c;
 }
 
-.pika-button:hover,
-.pika-button:focus {
-  background: #b45309 !important;
-  color: white !important;
-  border-radius: 0.5rem;
+/* Flatpickr custom theme — La Belle */
+.flatpickr-calendar {
+  background: #1c1917 !important;
+  border: 1px solid #44403c !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5) !important;
+  font-family: 'Inter', sans-serif !important;
 }
 
-.is-selected .pika-button {
+.flatpickr-months {
+  background: #1c1917 !important;
+  border-radius: 1rem 1rem 0 0 !important;
+}
+
+.flatpickr-month {
+  color: #fafaf9 !important;
+  fill: #fafaf9 !important;
+}
+
+.flatpickr-current-month {
+  color: #fafaf9 !important;
+  font-size: 14px !important;
+}
+
+.flatpickr-current-month .numInputWrapper span {
+  border-color: #44403c !important;
+}
+
+.flatpickr-current-month input.cur-year {
+  color: #fafaf9 !important;
+}
+
+.flatpickr-prev-month,
+.flatpickr-next-month {
+  color: #78716c !important;
+  fill: #78716c !important;
+}
+
+.flatpickr-prev-month:hover,
+.flatpickr-next-month:hover {
+  color: #d97706 !important;
+  fill: #d97706 !important;
+}
+
+.flatpickr-weekday {
+  color: #78716c !important;
+  font-size: 11px !important;
+  letter-spacing: 0.1em !important;
+}
+
+.flatpickr-day {
+  color: #d4d4d4 !important;
+  border-radius: 0.5rem !important;
+}
+
+.flatpickr-day:hover {
+  background: #44403c !important;
+  border-color: #44403c !important;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+  background: #d97706 !important;
+  border-color: #d97706 !important;
+  color: #1c1917 !important;
+  font-weight: 600 !important;
+}
+
+.flatpickr-day.inRange {
   background: #92400e !important;
-  border-radius: 0.5rem;
+  border-color: #92400e !important;
+  color: #fef3c7 !important;
+  box-shadow: -5px 0 0 #92400e, 5px 0 0 #92400e !important;
 }
 
-.pika-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #292524;
+.flatpickr-day.flatpickr-disabled {
+  color: #44403c !important;
 }
 
-.pika-prev, .pika-next {
-  opacity: 0.5;
+.flatpickr-day.today {
+  border-color: #d97706 !important;
+  color: #d97706 !important;
 }
 
-.pika-prev:hover, .pika-next:hover {
-  opacity: 1;
+.flatpickr-day.today:hover {
+  background: #44403c !important;
+}
+
+.flatpickr-innerContainer {
+  padding: 0 8px 8px !important;
+}
+
+.flatpickr-rContainer {
+  padding: 0 8px !important;
 }
