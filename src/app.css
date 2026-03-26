@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+.pika-single {
+  font-family: 'Inter', sans-serif;
+  border: 1px solid #e7e5e4;
+  border-radius: 1rem;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+}
+
+.pika-button:hover,
+.pika-button:focus {
+  background: #b45309 !important;
+  color: white !important;
+  border-radius: 0.5rem;
+}
+
+.is-selected .pika-button {
+  background: #92400e !important;
+  border-radius: 0.5rem;
+}
+
+.pika-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #292524;
+}
+
+.pika-prev, .pika-next {
+  opacity: 0.5;
+}
+
+.pika-prev:hover, .pika-next:hover {
+  opacity: 1;
+}
