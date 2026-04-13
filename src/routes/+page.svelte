@@ -327,7 +327,7 @@
       Serviced apartments with a French touch<br/>and Khmer hospitality
     </p>
     <p class="text-amber-300/90 text-sm font-light tracking-wide mb-10">
-      Rooftop Jacuzzi · Sunset Bar · Restaurant · Spa
+      Rooftop Jacuzzi · Sunset Bar · Restaurant · Spa · Weight Room
     </p>
     <div class="flex gap-4 flex-wrap justify-center">
       <a href="https://wa.me/85531636123" target="_blank" class="bg-white text-black px-8 py-3 rounded-full text-sm font-medium hover:bg-amber-50 transition tracking-wide">
@@ -378,35 +378,6 @@
   </div>
 </div>
 
-<!-- CREDIBILITY BAR -->
-<div class="bg-stone-800 py-6 px-8">
-  <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-center gap-12 text-center">
-    <div>
-      <p class="text-amber-400 text-2xl font-light" style="font-family: 'Playfair Display', serif;">4.5 / 5</p>
-      <p class="text-white/50 text-xs tracking-widest uppercase mt-1">TripAdvisor</p>
-    </div>
-    <div class="w-px h-8 bg-white/10 hidden md:block"></div>
-    <div>
-      <p class="text-amber-400 text-2xl font-light" style="font-family: 'Playfair Display', serif;">8.7 / 10</p>
-      <p class="text-white/50 text-xs tracking-widest uppercase mt-1">353 Reviews</p>
-    </div>
-    <div class="w-px h-8 bg-white/10 hidden md:block"></div>
-    <div>
-      <p class="text-amber-400 text-2xl font-light" style="font-family: 'Playfair Display', serif;">9.1</p>
-      <p class="text-white/50 text-xs tracking-widest uppercase mt-1">Staff Score</p>
-    </div>
-    <div class="w-px h-8 bg-white/10 hidden md:block"></div>
-    <div>
-      <p class="text-amber-400 text-2xl font-light" style="font-family: 'Playfair Display', serif;">20</p>
-      <p class="text-white/50 text-xs tracking-widest uppercase mt-1">Suites</p>
-    </div>
-    <div class="w-px h-8 bg-white/10 hidden md:block"></div>
-    <div>
-      <p class="text-amber-400 text-2xl font-light" style="font-family: 'Playfair Display', serif;">#16</p>
-      <p class="text-white/50 text-xs tracking-widest uppercase mt-1">of 342 Phnom Penh</p>
-    </div>
-  </div>
-</div>
 
 <!-- PHOTO CAROUSEL -->
 <section class="relative w-full h-[500px] overflow-hidden bg-stone-900">
@@ -429,9 +400,40 @@
   <div class="absolute bottom-4 right-6 text-white/50 text-xs z-10">{currentSlide + 1} / {photos.length}</div>
 </section>
 
+<!-- CREDIBILITY BAR -->
+<div class="bg-stone-300 py-6 px-8 border-y border-stone-400">
+  <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-center gap-12 text-center">
+    <div>
+      <p class="text-amber-600 text-2xl font-light" style="font-family: 'Playfair Display', serif;">4.5 / 5</p>
+      <p class="text-stone-400 text-xs tracking-widest uppercase mt-1">TripAdvisor</p>
+    </div>
+    <div class="w-px h-8 bg-stone-200 hidden md:block"></div>
+    <div>
+      <p class="text-amber-600 text-2xl font-light" style="font-family: 'Playfair Display', serif;">8.7 / 10</p>
+      <p class="text-stone-400 text-xs tracking-widest uppercase mt-1">353 Reviews</p>
+    </div>
+    <div class="w-px h-8 bg-stone-200 hidden md:block"></div>
+    <div>
+      <p class="text-amber-600 text-2xl font-light" style="font-family: 'Playfair Display', serif;">9.1</p>
+      <p class="text-stone-400 text-xs tracking-widest uppercase mt-1">Staff Score</p>
+    </div>
+    <div class="w-px h-8 bg-stone-200 hidden md:block"></div>
+    <div>
+      <p class="text-amber-600 text-2xl font-light" style="font-family: 'Playfair Display', serif;">20</p>
+      <p class="text-stone-400 text-xs tracking-widest uppercase mt-1">Suites</p>
+    </div>
+    <div class="w-px h-8 bg-stone-200 hidden md:block"></div>
+    <div>
+      <p class="text-amber-600 text-2xl font-light" style="font-family: 'Playfair Display', serif;">#16</p>
+      <p class="text-stone-400 text-xs tracking-widest uppercase mt-1">of 342 Phnom Penh</p>
+    </div>
+  </div>
+</div>
+
 <!-- ROOFTOP SECTION -->
 <section id="rooftop" class="py-24 px-8 bg-stone-900 text-white">
   <div class="max-w-6xl mx-auto">
+
     <div class="text-center mb-16">
       <p class="text-amber-400 text-xs tracking-[0.4em] uppercase mb-4">6th Floor</p>
       <h2 class="text-4xl md:text-5xl mb-6" style="font-family: 'Playfair Display', serif;">
@@ -472,10 +474,10 @@
 </section>
 
 <!-- ROOMS SECTION -->
-<section id="rooms" class="py-24 px-8 bg-stone-50">
+<section id="rooms" class="pt-12 pb-24 px-8 bg-stone-50">
   <div class="max-w-6xl mx-auto">
-    <div class="text-center mb-16">
-      <p class="text-amber-600 text-xs tracking-[0.4em] uppercase mb-4">Accommodations</p>
+    <div class="text-center mb-12">
+      <p class="text-amber-600 text-xs tracking-[0.4em] uppercase mb-3">Accommodations</p>
       <h2 class="text-4xl md:text-5xl text-stone-800" style="font-family: 'Playfair Display', serif;">Our Suites</h2>
     </div>
     <div class="grid md:grid-cols-3 gap-8">
@@ -503,26 +505,26 @@
 </section>
 
 <!-- TRANSPORT STRIP -->
-<div class="bg-stone-800 py-8 px-8">
+<div class="bg-stone-300 py-8 px-8">
   <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-center gap-12 text-center">
     <div>
-      <p class="text-amber-400 text-sm mb-1" style="font-family: 'Playfair Display', serif;">Private Car</p>
-      <p class="text-white/40 text-xs font-light tracking-wide">Airport transfers & city tours</p>
+      <p class="text-amber-700 text-xl mb-1" style="font-family: 'Playfair Display', serif;">Private Car</p>
+      <p class="text-stone-500 text-sm font-light tracking-wide">Airport transfers & city tours</p>
     </div>
-    <div class="w-px h-8 bg-white/10 hidden md:block"></div>
+    <div class="w-px h-10 bg-stone-400 hidden md:block"></div>
     <div>
-      <p class="text-amber-400 text-sm mb-1" style="font-family: 'Playfair Display', serif;">Tuk Tuk</p>
-      <p class="text-white/40 text-xs font-light tracking-wide">Local rides & market runs</p>
+      <p class="text-amber-700 text-xl mb-1" style="font-family: 'Playfair Display', serif;">Tuk Tuk</p>
+      <p class="text-stone-500 text-sm font-light tracking-wide">Local rides & market runs</p>
     </div>
-    <div class="w-px h-8 bg-white/10 hidden md:block"></div>
+    <div class="w-px h-10 bg-stone-400 hidden md:block"></div>
     <div>
-      <p class="text-amber-400 text-sm mb-1" style="font-family: 'Playfair Display', serif;">Bicycle Rental</p>
-      <p class="text-white/40 text-xs font-light tracking-wide">Explore at your own pace</p>
+      <p class="text-amber-700 text-xl mb-1" style="font-family: 'Playfair Display', serif;">Bicycle Rental</p>
+      <p class="text-stone-500 text-sm font-light tracking-wide">Explore at your own pace</p>
     </div>
-    <div class="w-px h-8 bg-white/10 hidden md:block"></div>
+    <div class="w-px h-10 bg-stone-400 hidden md:block"></div>
     <div>
-      <p class="text-amber-400 text-sm mb-1" style="font-family: 'Playfair Display', serif;">Moto Rental</p>
-      <p class="text-white/40 text-xs font-light tracking-wide">Freedom around the city</p>
+      <p class="text-amber-700 text-xl mb-1" style="font-family: 'Playfair Display', serif;">Moto Rental</p>
+      <p class="text-stone-500 text-sm font-light tracking-wide">Freedom around the city</p>
     </div>
   </div>
 </div>
@@ -887,48 +889,10 @@
   </div>
 </section>
 
-<!-- FOOTER SOCIAL BAR -->
+<!-- FOOTER -->
 <footer class="bg-stone-950 py-8 px-8">
   <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
     <p class="text-white/30 text-xs tracking-widest uppercase">La Belle Résidence · Phnom Penh</p>
-    <div class="flex items-center gap-6">
-      <!-- Facebook - confirmed -->
-      <a href="https://www.facebook.com/labelleresidence" target="_blank" rel="noopener noreferrer" class="text-white/40 hover:text-white transition" title="Facebook">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-        </svg>
-      </a>
-      <!-- YouTube - confirmed -->
-      <a href="https://www.youtube.com/channel/UCXCAhI5BOY6cjiPcRfxZbvw" target="_blank" rel="noopener noreferrer" class="text-white/40 hover:text-white transition" title="YouTube">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-          <path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/>
-        </svg>
-      </a>
-      <!-- TripAdvisor - confirmed -->
-      <a href="https://www.tripadvisor.com/Hotel_Review-g293940-d10112631-Reviews-La_Belle_Residence-Phnom_Penh.html" target="_blank" rel="noopener noreferrer" class="text-white/40 hover:text-white transition" title="TripAdvisor">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-          <path d="M12.006 4.295c-2.67 0-5.338.784-7.645 2.353H0l1.963 2.135a5.997 5.997 0 0 0 2.03 8.816A5.997 5.997 0 0 0 12 19.705a5.997 5.997 0 0 0 8.007-2.106 5.997 5.997 0 0 0 2.03-8.816L24 6.648h-4.361a13.891 13.891 0 0 0-7.633-2.353zM12 7.247a4.753 4.753 0 1 1 0 9.506 4.753 4.753 0 0 1 0-9.506zm0 1.908a2.845 2.845 0 1 0 0 5.69 2.845 2.845 0 0 0 0-5.69z"/>
-        </svg>
-      </a>
-      <!-- WhatsApp - confirmed -->
-      <a href="https://wa.me/85531636123" target="_blank" rel="noopener noreferrer" class="text-white/40 hover:text-white transition" title="WhatsApp">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-        </svg>
-      </a>
-      <!-- Instagram - placeholder, needs handle from Michael -->
-      <a href="https://instagram.com/labelleresidence" target="_blank" rel="noopener noreferrer" class="text-white/40 hover:text-white transition" title="Instagram">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-        </svg>
-      </a>
-      <!-- TikTok - placeholder, needs handle from Michael -->
-      <a href="https://tiktok.com/@labelleresidence" target="_blank" rel="noopener noreferrer" class="text-white/40 hover:text-white transition" title="TikTok">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-          <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
-        </svg>
-      </a>
-    </div>
     <p class="text-white/20 text-xs">© 2026 La Belle Résidence</p>
   </div>
 </footer>
