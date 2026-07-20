@@ -3,12 +3,13 @@
   import { onMount } from 'svelte';
   import flatpickr from 'flatpickr';
   import 'flatpickr/dist/flatpickr.min.css';
+  import { BookingFlow, formatMoney } from 'jm-booking-client';
+  import { PUBLIC_RESERVATIONS_API_URL } from '$env/static/public';
+  import DateRangePicker from '$lib/DateRangePicker.svelte';
+  import { currentLocale, setLocale, LOCALES } from '$lib/i18n';
 
   let dateInput: HTMLInputElement;
-
-  const langs = ['EN', 'ZH', 'FR', 'KH', 'TL', 'MY'];
-  let currentLang = $state('EN');
-  let langBarOpen = $state(false);
+  let langOpen = $state(false);
 
   const photos = [
     { src: 'https://www.momondo.com/rimg/himg/41/36/ab/expedia_group-2563091-f312be-208161.jpg?width=968&height=607&crop=true', label: 'Pool' },
@@ -33,27 +34,6 @@
   $effect(() => {
     autoplay = setInterval(nextSlide, 4500);
     return () => clearInterval(autoplay);
-  });
-
-  $effect(() => {
-    fetch('https://ipapi.co/json/')
-      .then(r => r.json())
-      .then(data => {
-        const country = data.country_code;
-        const map: Record<string, string> = {
-          'US': 'EN', 'GB': 'EN', 'AU': 'EN',
-          'CN': 'ZH', 'TW': 'ZH', 'HK': 'ZH', 'SG': 'ZH',
-          'FR': 'FR', 'BE': 'FR', 'CH': 'FR',
-          'KH': 'KH',
-          'PH': 'TL',
-          'MY': 'MY', 'BN': 'MY',
-          'JP': 'EN', 'KR': 'EN',
-        };
-        currentLang = map[country] ?? 'EN';
-      })
-      .catch(() => {
-        currentLang = 'EN';
-      });
   });
 
   let scrolled = $state(false);
@@ -141,6 +121,38 @@
     } catch {
       formStatus = 'error';
     }
+  }
+
+  // Real-time booking modal — added alongside the enquiry form above, not a
+  // replacement. Site-local display metadata not in the reservations schema,
+  // keyed by room name so a mismatch only affects cosmetics, never
+  // price/availability/booking correctness (those come live from `flow`).
+  const ROOM_SIZE: Record<string, string> = {
+    '1 Bedroom Superior Suite': '40–50 m²',
+    '1 Bedroom Suite':          '45–55 m²',
+    '2 Bedroom Superior Suite': '65–75 m²',
+    '2 Bedroom Suite':          '70–85 m²',
+    '3 Bedroom Suite':          '100–120 m²',
+  };
+  const FALLBACK_CURRENCY = 'USD';
+
+  const flow = new BookingFlow({ apiUrl: PUBLIC_RESERVATIONS_API_URL, slug: 'labelle' });
+
+  let bookModalOpen = $state(false);
+
+  function clamp(v: number, lo: number, hi: number) { return Math.min(hi, Math.max(lo, v)); }
+
+  function openBookModal() { flow.reset(); bookModalOpen = true; }
+  function closeBookModal() { bookModalOpen = false; setTimeout(() => { flow.step = 1; }, 300); }
+
+  function fmtBookDate(iso: string) {
+    if (!iso) return '';
+    return new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  async function handleBookSubmit(e: Event) {
+    e.preventDefault();
+    await flow.submitBooking();
   }
 </script>
 
@@ -276,37 +288,22 @@
     <a href="#enquiry" class="hover:text-white transition">Contact</a>
   </div>
   <div class="flex items-center gap-4">
-    <button
-      onclick={() => langBarOpen = !langBarOpen}
-      class="text-white/60 hover:text-white text-xs tracking-widest uppercase transition"
-    >
-      {currentLang}
-    </button>
     <a href="#enquiry" class="bg-white text-black text-xs font-medium px-4 py-2 rounded-full hover:bg-white/90 transition tracking-wide">
       Book Direct
     </a>
   </div>
 </nav>
 
-<!-- LANGUAGE BAR -->
-<div class={`fixed top-16 left-0 right-0 z-40 transition-all duration-300 overflow-hidden ${langBarOpen ? 'max-h-16' : 'max-h-0'}`}>
-  <div class="bg-stone-900/95 backdrop-blur-sm border-b border-white/5 px-8 py-3 flex items-center justify-center gap-8">
-    {#each [
-      { code: 'EN', label: 'English' },
-      { code: 'ZH', label: '中文' },
-      { code: 'FR', label: 'Français' },
-      { code: 'KH', label: 'ខ្មែរ' },
-      { code: 'TL', label: 'Filipino' },
-      { code: 'MY', label: 'Melayu' }
-    ] as lang}
-      <button
-        onclick={() => { currentLang = lang.code; langBarOpen = false; }}
-        class={`text-xs tracking-widest uppercase transition ${currentLang === lang.code ? 'text-amber-400' : 'text-white/40 hover:text-white'}`}
-      >
-        {lang.label}
-      </button>
-    {/each}
-  </div>
+<!-- FLOATING LANGUAGE SWITCHER -->
+<div class="fixed right-0 z-40 flex flex-col overflow-hidden shadow-xl" style="top: 33%; transform: translateY(-50%);">
+  {#each LOCALES as loc}
+    <button
+      onclick={() => setLocale(loc.code)}
+      class="cursor-pointer px-3 py-3 text-xs font-semibold uppercase tracking-widest transition-colors duration-150 {$currentLocale === loc.code ? 'bg-amber-600 text-white' : 'bg-stone-900 text-white/50 hover:text-white'}"
+    >
+      {loc.short}
+    </button>
+  {/each}
 </div>
 
 <!-- HERO -->
@@ -330,6 +327,9 @@
       Rooftop Jacuzzi · Sunset Bar · Restaurant · Spa · Weight Room
     </p>
     <div class="flex gap-4 flex-wrap justify-center">
+      <button onclick={openBookModal} class="bg-amber-500 text-black px-8 py-3 rounded-full text-sm font-medium hover:bg-amber-400 transition tracking-wide">
+        Check Availability &amp; Book
+      </button>
       <a href="https://wa.me/85531636123" target="_blank" class="bg-white text-black px-8 py-3 rounded-full text-sm font-medium hover:bg-amber-50 transition tracking-wide">
         Book Direct — Best Rate
       </a>
@@ -478,7 +478,10 @@
   <div class="max-w-6xl mx-auto">
     <div class="text-center mb-12">
       <p class="text-amber-600 text-xs tracking-[0.4em] uppercase mb-3">Accommodations</p>
-      <h2 class="text-4xl md:text-5xl text-stone-800" style="font-family: 'Playfair Display', serif;">Our Suites</h2>
+      <h2 class="text-4xl md:text-5xl text-stone-800 mb-6" style="font-family: 'Playfair Display', serif;">Our Suites</h2>
+      <button onclick={openBookModal} class="inline-block bg-stone-800 text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-amber-700 transition tracking-wide">
+        Check Live Availability
+      </button>
     </div>
     <div class="grid md:grid-cols-3 gap-8">
       {#each [
@@ -503,6 +506,195 @@
     </div>
   </div>
 </section>
+
+<!-- BOOKING MODAL -->
+{#if bookModalOpen}
+  <div
+    class="fixed inset-0 z-[60] bg-stone-950/85 backdrop-blur-sm flex items-center justify-center p-4"
+    onclick={(e) => { if (e.target === e.currentTarget) closeBookModal(); }}
+    role="dialog" aria-modal="true" aria-label="Book your stay"
+  >
+    <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl max-h-[92vh] overflow-y-auto">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-stone-200 sticky top-0 bg-white z-10 rounded-t-2xl">
+        <div>
+          <p class="text-stone-800 text-lg leading-tight" style="font-family: 'Playfair Display', serif;">Reserve Your Stay</p>
+          {#if flow.step === 2 || flow.step === 'success'}
+            <p class="text-amber-600 text-xs mt-0.5 tracking-wide">{flow.selectedRoomType?.name}{flow.nights > 0 ? ` · ${flow.nights} night${flow.nights !== 1 ? 's' : ''}` : ''}</p>
+          {/if}
+        </div>
+        <button onclick={closeBookModal} class="text-stone-400 hover:text-stone-900 text-2xl leading-none transition-colors w-8 h-8 flex items-center justify-center" aria-label="Close">×</button>
+      </div>
+
+      <!-- Step 1: Dates + suite + guests -->
+      {#if flow.step === 1}
+        <div class="px-6 py-5 space-y-5">
+
+          <div>
+            <label class="block text-amber-600 text-[10px] uppercase tracking-widest mb-1.5">Check-in → Check-out</label>
+            <DateRangePicker
+              bind:checkin={flow.checkin}
+              bind:checkout={flow.checkout}
+              class="w-full bg-stone-50 border border-stone-200 rounded-xl text-stone-900 px-3 py-2.5 text-sm focus:outline-none focus:border-amber-500 transition-colors cursor-pointer"
+            />
+          </div>
+
+          <div>
+            <label class="block text-amber-600 text-[10px] uppercase tracking-widest mb-1.5">Suite Type</label>
+            <select bind:value={flow.roomTypeId}
+              class="w-full bg-stone-50 border border-stone-200 rounded-xl text-stone-900 px-3 py-2.5 text-sm focus:outline-none focus:border-amber-500 transition-colors">
+              {#each flow.roomTypes as room}
+                {@const live = flow.availability.find(a => a.room_type_id === room.room_type_id)}
+                <option value={room.room_type_id} disabled={live ? !live.bookable : false}>
+                  {room.name}{ROOM_SIZE[room.name] ? ' — ' + ROOM_SIZE[room.name] : ''}{live && !live.bookable ? ' (Sold out for these dates)' : ''}
+                </option>
+              {/each}
+            </select>
+          </div>
+
+          {#if flow.availabilityError || flow.roomTypesError}
+            <p class="text-red-600 text-xs">Something went wrong loading availability. Please try again or contact us directly.</p>
+          {/if}
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-amber-600 text-[10px] uppercase tracking-widest mb-1.5">Adults</label>
+              <div class="flex items-center bg-stone-50 border border-stone-200 rounded-xl">
+                <button onclick={() => flow.adults = clamp(flow.adults - 1, 1, flow.selectedRoomType?.capacity ?? 10)} class="px-4 py-2.5 text-stone-400 hover:text-stone-900 hover:bg-stone-100 transition-colors text-lg leading-none">−</button>
+                <span class="flex-1 text-center text-stone-900 text-sm font-medium">{flow.adults}</span>
+                <button onclick={() => flow.adults = clamp(flow.adults + 1, 1, flow.selectedRoomType?.capacity ?? 10)} class="px-4 py-2.5 text-stone-400 hover:text-stone-900 hover:bg-stone-100 transition-colors text-lg leading-none">+</button>
+              </div>
+            </div>
+            <div>
+              <label class="block text-amber-600 text-[10px] uppercase tracking-widest mb-1.5">Children</label>
+              <div class="flex items-center bg-stone-50 border border-stone-200 rounded-xl">
+                <button onclick={() => flow.children = clamp(flow.children - 1, 0, 3)} class="px-4 py-2.5 text-stone-400 hover:text-stone-900 hover:bg-stone-100 transition-colors text-lg leading-none">−</button>
+                <span class="flex-1 text-center text-stone-900 text-sm font-medium">{flow.children}</span>
+                <button onclick={() => flow.children = clamp(flow.children + 1, 0, 3)} class="px-4 py-2.5 text-stone-400 hover:text-stone-900 hover:bg-stone-100 transition-colors text-lg leading-none">+</button>
+              </div>
+            </div>
+          </div>
+
+          {#if flow.nights > 0 && flow.selectedAvailability?.bookable}
+            <div class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-4 text-sm space-y-2">
+              <div class="flex justify-between text-stone-600"><span>Suite</span><span class="font-medium text-stone-900">{flow.selectedRoomType?.name}</span></div>
+              <div class="flex justify-between text-stone-600"><span>Check-in</span><span>{fmtBookDate(flow.checkin)}</span></div>
+              <div class="flex justify-between text-stone-600"><span>Check-out</span><span>{fmtBookDate(flow.checkout)}</span></div>
+              <div class="flex justify-between text-stone-600"><span>Duration</span><span>{flow.nights} night{flow.nights !== 1 ? 's' : ''}</span></div>
+              <div class="flex justify-between text-stone-600"><span>Guests</span><span>{flow.adults} adult{flow.adults !== 1 ? 's' : ''}{flow.children > 0 ? `, ${flow.children} child${flow.children !== 1 ? 'ren' : ''}` : ''}</span></div>
+              <div class="border-t border-amber-200 pt-2 flex justify-between font-semibold text-stone-900">
+                <span>Estimated Total</span>
+                <span class="text-amber-700 text-base">{formatMoney(flow.selectedAvailability.total_price_cents, flow.currency || FALLBACK_CURRENCY)}</span>
+              </div>
+              <p class="text-[10px] text-stone-400">{formatMoney(flow.selectedRoomType?.base_price_cents ?? 0, flow.currency || FALLBACK_CURRENCY)}/night · Taxes included</p>
+            </div>
+          {:else if flow.nights > 0 && !flow.availabilityLoading && flow.selectedAvailability && !flow.selectedAvailability.bookable}
+            <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-4 text-sm text-red-700">
+              Sold out for these dates
+            </div>
+          {/if}
+
+          <button
+            onclick={() => flow.step = 2}
+            disabled={!flow.canProceedToDetails}
+            class="w-full bg-amber-600 hover:bg-amber-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs uppercase tracking-widest py-4 rounded-full transition-colors font-medium"
+          >
+            {#if !flow.checkin || !flow.checkout || flow.nights < 1}
+              Select Dates to Continue
+            {:else if flow.availabilityLoading}
+              Checking availability…
+            {:else if !flow.selectedAvailability?.bookable}
+              Sold out for these dates
+            {:else}
+              Next — Enter Your Details
+            {/if}
+          </button>
+          <p class="text-stone-400 text-xs text-center">No credit card required at this step.</p>
+        </div>
+
+      <!-- Step 2: Guest details -->
+      {:else if flow.step === 2}
+        <div class="bg-amber-50 border-b border-amber-100 px-6 py-3 flex items-center justify-between text-sm">
+          <span class="text-stone-700 font-medium">{flow.selectedRoomType?.name} · {flow.nights} night{flow.nights !== 1 ? 's' : ''}</span>
+          <span class="text-amber-700 font-semibold">{formatMoney(flow.selectedAvailability?.total_price_cents ?? 0, flow.currency || FALLBACK_CURRENCY)}</span>
+        </div>
+
+        <form onsubmit={handleBookSubmit} class="px-6 py-5 space-y-4">
+          <div>
+            <label for="lb-name" class="block text-amber-600 text-[10px] uppercase tracking-widest mb-1.5">Full Name <span class="text-stone-400 normal-case">*</span></label>
+            <input id="lb-name" type="text" bind:value={flow.guestName} required placeholder="Your name"
+              class="w-full bg-stone-50 border border-stone-200 rounded-xl text-stone-900 px-3 py-2.5 text-sm focus:outline-none focus:border-amber-500 transition-colors" />
+          </div>
+          <div>
+            <label for="lb-email" class="block text-amber-600 text-[10px] uppercase tracking-widest mb-1.5">Email Address <span class="text-stone-400 normal-case">*</span></label>
+            <input id="lb-email" type="email" bind:value={flow.guestEmail} required placeholder="your@email.com"
+              class="w-full bg-stone-50 border border-stone-200 rounded-xl text-stone-900 px-3 py-2.5 text-sm focus:outline-none focus:border-amber-500 transition-colors" />
+          </div>
+          <div>
+            <label for="lb-phone" class="block text-amber-600 text-[10px] uppercase tracking-widest mb-1.5">Phone <span class="text-stone-300 normal-case font-normal">(optional)</span></label>
+            <input id="lb-phone" type="tel" bind:value={flow.guestPhone} placeholder="+855 ..."
+              class="w-full bg-stone-50 border border-stone-200 rounded-xl text-stone-900 px-3 py-2.5 text-sm focus:outline-none focus:border-amber-500 transition-colors" />
+          </div>
+          <div>
+            <label for="lb-notes" class="block text-amber-600 text-[10px] uppercase tracking-widest mb-1.5">Special Requests <span class="text-stone-300 normal-case font-normal">(optional)</span></label>
+            <textarea id="lb-notes" bind:value={flow.guestNotes} rows="3" placeholder="Early check-in, long-term stay, dietary needs…"
+              class="w-full bg-stone-50 border border-stone-200 rounded-xl text-stone-900 px-3 py-2.5 text-sm focus:outline-none focus:border-amber-500 transition-colors resize-none"></textarea>
+          </div>
+
+          {#if flow.bookingError}
+            <p class="text-red-600 text-xs">{flow.bookingError === 'sold_out' || flow.bookingError === 'closed' ? 'Sold out for these dates.' : 'Something went wrong submitting your request. Please try again or contact us directly.'}</p>
+          {/if}
+
+          <div class="pt-2 space-y-3">
+            <button type="submit" disabled={flow.submitting}
+              class="w-full bg-amber-600 hover:bg-amber-500 disabled:opacity-60 text-white text-xs uppercase tracking-widest py-4 rounded-full transition-colors font-medium flex items-center justify-center gap-2">
+              {#if flow.submitting}
+                <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 11-8 8z"></path>
+                </svg>
+                Submitting…
+              {:else}
+                Confirm Booking Request
+              {/if}
+            </button>
+            <button type="button" onclick={() => flow.step = 1} class="w-full text-center text-stone-400 hover:text-stone-700 text-xs uppercase tracking-widest py-2 transition-colors">
+              ← Back to Dates
+            </button>
+          </div>
+          <p class="text-stone-400 text-xs text-center">Your reservation is confirmed instantly — no waiting for a reply.</p>
+        </form>
+
+      <!-- Success state -->
+      {:else}
+        <div class="px-6 py-10 text-center">
+          <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
+            <svg class="w-7 h-7 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h3 class="text-stone-900 text-2xl font-semibold mb-2" style="font-family: 'Playfair Display', serif;">Reservation Confirmed!</h3>
+          {#if flow.lastBooking}
+            <p class="text-stone-600 mb-4">Thank you, {flow.lastBooking.guest_name.split(' ')[0]}. Confirmation #{flow.lastBooking.id}.</p>
+          {/if}
+          <div class="bg-stone-50 border border-stone-200 rounded-xl px-4 py-4 text-sm space-y-1.5 mb-6 text-left">
+            <div class="flex justify-between text-stone-600"><span>Suite</span><span class="font-medium text-stone-900">{flow.selectedRoomType?.name}</span></div>
+            <div class="flex justify-between text-stone-600"><span>Check-in</span><span>{fmtBookDate(flow.checkin)}</span></div>
+            <div class="flex justify-between text-stone-600"><span>Check-out</span><span>{fmtBookDate(flow.checkout)}</span></div>
+            <div class="flex justify-between font-semibold text-stone-900 border-t border-stone-200 pt-2 mt-2"><span>Total</span><span class="text-amber-700">{formatMoney(flow.lastBooking?.total_cents ?? 0, flow.lastBooking?.currency ?? FALLBACK_CURRENCY)}</span></div>
+          </div>
+          <p class="text-stone-500 text-sm leading-relaxed mb-6">
+            You're all set — our front desk will have your details ready for arrival.
+          </p>
+          <a href="https://wa.me/85531636123" target="_blank" class="inline-block border border-stone-200 text-stone-500 px-6 py-3 rounded-full text-sm hover:border-amber-400 hover:text-amber-600 transition mb-1">WhatsApp Us</a>
+          <button onclick={closeBookModal} class="block mx-auto mt-6 text-stone-400 hover:text-stone-700 text-xs uppercase tracking-widest transition-colors">Close</button>
+        </div>
+      {/if}
+
+    </div>
+  </div>
+{/if}
 
 <!-- TRANSPORT STRIP -->
 <div class="bg-stone-300 py-8 px-8">

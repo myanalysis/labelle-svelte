@@ -28,6 +28,7 @@
 	},
 	"dependencies": {
 		"flatpickr": "^4.6.13",
+		"jm-booking-client": "link:../../junglemonkey-svelte-tauri/jm-booking-client",
 		"lucide-svelte": "0.468.0",
 		"resend": "^6.9.4",
 		"svelty-picker": "^6.1.6"

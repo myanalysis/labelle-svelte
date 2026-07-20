@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "labelle-svelte",
+  "account_id": "29ced6abadcf02459573ad7307f18b15",
   "compatibility_date": "2026-03-26",
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": true,
